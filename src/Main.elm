@@ -15,22 +15,6 @@ import Url.Parser as Parser
 
 
 
--- MAIN
-
-
-main : Program () Model Msg
-main =
-    Browser.application
-        { init = init
-        , view = view
-        , update = update
-        , subscriptions = subscriptions
-        , onUrlChange = UrlChanged
-        , onUrlRequest = LinkClicked
-        }
-
-
-
 -- MODEL
 
 
@@ -38,6 +22,10 @@ type alias Model =
     { key : Nav.Key
     , page : Pages.Page
     }
+
+
+
+-- INIT
 
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
@@ -101,43 +89,6 @@ update message model =
 
 
 
--- SUBSCRIPTIONS
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.batch [ Browser.Events.onResize OnWindowResize ]
-
-
-
--- VIEW
-
-
-view : Model -> Browser.Document Msg
-view model =
-    case model.page of
-        Pages.DoesNotExist _ ->
-            { title = "Page Not Found"
-            , body = [ text "Does not exist" ]
-            }
-
-        Pages.PageOne _ ->
-            { title = "Page One Found"
-            , body = [ text "Page One" ]
-            }
-
-        _ ->
-            { title = "top"
-            , body = [ text "top", ul [] [ viewLink "/pageone", viewLink "/notexist", viewLink "/pageone/kaldjf" ] ]
-            }
-
-
-viewLink : String -> Html msg
-viewLink path =
-    li [] [ a [ href path ] [ text path ] ]
-
-
-
 -- ROUTING FROM PACKAGE.ELM-LANG.ORG
 -- These functions send a command to a page
 
@@ -190,6 +141,43 @@ coolparser model session =
         ]
 
 
+
+-- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.batch [ Browser.Events.onResize OnWindowResize ]
+
+
+
+-- VIEW
+
+
+view : Model -> Browser.Document Msg
+view model =
+    case model.page of
+        Pages.DoesNotExist _ ->
+            { title = "Page Not Found"
+            , body = [ text "Does not exist" ]
+            }
+
+        Pages.PageOne _ ->
+            { title = "Page One Found"
+            , body = [ text "Page One" ]
+            }
+
+        _ ->
+            { title = "top"
+            , body = [ text "top", ul [] [ viewLink "/pageone", viewLink "/notexist", viewLink "/pageone/kaldjf" ] ]
+            }
+
+
+viewLink : String -> Html msg
+viewLink path =
+    li [] [ a [ href path ] [ text path ] ]
+
+
 extractSession : Model -> Session.Session
 extractSession model =
     case model.page of
@@ -201,3 +189,19 @@ extractSession model =
 
         Pages.PageOne m ->
             m.session
+
+
+
+-- MAIN
+
+
+main : Program () Model Msg
+main =
+    Browser.application
+        { init = init
+        , view = view
+        , update = update
+        , subscriptions = subscriptions
+        , onUrlChange = UrlChanged
+        , onUrlRequest = LinkClicked
+        }
