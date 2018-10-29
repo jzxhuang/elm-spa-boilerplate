@@ -10,9 +10,11 @@ import Html.Attributes exposing (..)
 import Page.PageOne as PageOne
 import Page.PageWithSubpage as PageWithSubpage
 import Page.Top as Top
+import Route
 import Session
 import Url
 import Url.Parser as Parser exposing ((</>))
+import Viewer
 
 
 
@@ -30,6 +32,7 @@ import Url.Parser as Parser exposing ((</>))
 
 type alias Model =
     { key : Nav.Key
+    , route : Route.Route
     , page : Page
     }
 
@@ -72,6 +75,29 @@ mapPageWithSubpageMsg model ( m, cmds ) =
     ( { model | page = PageWithSubpage m }, Cmd.map PageWithSubpageMsg cmds )
 
 
+viewLink : String -> Html msg
+viewLink path =
+    li [] [ a [ href path ] [ text path ] ]
+
+
+extractSession : Model -> Session.Session
+extractSession model =
+    case model.page of
+        NotFound session ->
+            session
+
+        Top m ->
+            m.session
+
+        -- NewPage m ->
+        -- m.session
+        PageOne m ->
+            m.session
+
+        PageWithSubpage m ->
+            m.session
+
+
 
 -- ROUTING
 
@@ -82,30 +108,42 @@ routeUrl url model =
         session =
             extractSession model
 
-        pageNotFound =
-            ( { model | page = NotFound session }, Cmd.none )
+        route =
+            Maybe.withDefault Route.NotFound <| Parser.parse Route.parser url
+
+        newModel =
+            { model | route = route }
     in
-    Maybe.withDefault pageNotFound <| Parser.parse (parser model session) url
+    case route of
+        Route.NotFound ->
+            ( { newModel | page = NotFound session }, Cmd.none )
 
+        Route.Top ->
+            mapTopMsg newModel (Top.init session)
 
-parser : Model -> Session.Session -> Parser.Parser (( Model, Cmd Msg ) -> a) a
-parser model session =
-    Parser.oneOf
-        [ route Parser.top (mapTopMsg model (Top.init session))
-        , route (Parser.s "pageone") (mapPageOneMsg model (PageOne.init session))
-        , route (Parser.s "pagewithsubpage" </> Parser.string)
-            (\subpage -> mapPageWithSubpageMsg model (PageWithSubpage.init session subpage))
+        -- Route.NewPage ->
+        -- mapNewPageMsg newModel (NewPage.init session)
+        Route.PageOne ->
+            mapPageOneMsg newModel (PageOne.init session)
 
-        --, route (Parser.s "newpage") (mapNewPageMsg model (NewPage.init session))
-        ]
-
-
-route : Parser.Parser a b -> a -> Parser.Parser (b -> c) c
-route parser_ handler =
-    Parser.map handler parser_
+        Route.PageWithSubpage subpage ->
+            mapPageWithSubpageMsg newModel (PageWithSubpage.init session subpage)
 
 
 
+-- Maybe.withDefault pageNotFound <| Parser.parse (parser model session) url
+-- parser : Model -> Session.Session -> Parser.Parser (( Model, Cmd Msg ) -> a) a
+-- parser model session =
+--     Parser.oneOf
+--         [ route Parser.top (mapTopMsg model (Top.init session))
+--         , route (Parser.s "pageone") (mapPageOneMsg model (PageOne.init session))
+--         , route (Parser.s "pagewithsubpage" </> Parser.string)
+--             (\subpage -> mapPageWithSubpageMsg model (PageWithSubpage.init session subpage))
+--         --, route (Parser.s "newpage") (mapNewPageMsg model (NewPage.init session))
+--         ]
+-- route : Parser.Parser a b -> a -> Parser.Parser (b -> c) c
+-- route parser_ handler =
+--     Parser.map handler parser_
 -- INIT
 
 
@@ -115,7 +153,7 @@ init flags url key =
         _ =
             Debug.log "url" url
     in
-    routeUrl url <| Model key (NotFound Session.empty)
+    routeUrl url <| Model key Route.NotFound (NotFound Session.empty)
 
 
 
@@ -216,55 +254,32 @@ subscriptions model =
 view : Model -> Browser.Document Msg
 view model =
     case model.page of
+        Top _ ->
+            { title = "top"
+            , body = [ Viewer.viewHeader model.route, text "top", ul [] [ viewLink "/pageone", viewLink "/notexist", viewLink "/pageone/kaldjf", viewLink "/pagewithsubpage/pqwoef", viewLink "/pagewithsubpage/" ], Viewer.viewFooter ]
+            }
+
         NotFound _ ->
             { title = "Page Not Found"
-            , body = [ text "Does not exist" ]
+            , body = [ Viewer.viewHeader model.route, text "Does not exist", Viewer.viewFooter ]
             }
 
         PageOne _ ->
             { title = "Page One Found"
-            , body = [ text "Page One" ]
+            , body = [ Viewer.viewHeader model.route, text "Page One", Viewer.viewFooter ]
             }
 
         PageWithSubpage _ ->
-            { title = "New Page"
-            , body = [ text "New Page" ]
-            }
-
-        -- NewPage _ ->
-        --     { title = "New Page"
-        --     , body = [ text "New Page" ]
-        --     }
-        _ ->
-            { title = "top"
-            , body = [ text "top", ul [] [ viewLink "/pageone", viewLink "/notexist", viewLink "/pageone/kaldjf", viewLink "pagewithsubpage/pqwoef" ] ]
+            { title = "Page with Subpage"
+            , body = [ Viewer.viewHeader model.route, text "Page with Subpage", Viewer.viewFooter ]
             }
 
 
-viewLink : String -> Html msg
-viewLink path =
-    li [] [ a [ href path ] [ text path ] ]
 
-
-extractSession : Model -> Session.Session
-extractSession model =
-    case model.page of
-        NotFound session ->
-            session
-
-        Top m ->
-            m.session
-
-        -- NewPage m ->
-        -- m.session
-        PageOne m ->
-            m.session
-
-        PageWithSubpage m ->
-            m.session
-
-
-
+-- NewPage _ ->
+--     { title = "New Page"
+--     , body = [ text "New Page" ]
+--     }
 -- MAIN
 
 
