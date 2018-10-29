@@ -1,4 +1,4 @@
-module Page.DoesNotExist exposing (Model, Msg(..), init, update, view)
+module Page.PageWithSubpage exposing (Model, Msg(..), init, update, view)
 
 import Browser
 import Html exposing (..)
@@ -12,6 +12,7 @@ import Session
 
 type alias Model =
     { session : Session.Session
+    , subpage : String
     }
 
 
@@ -19,9 +20,9 @@ type alias Model =
 -- INIT
 
 
-init : Session.Session -> ( Model, Cmd Msg )
-init session =
-    ( { session = session }, Cmd.none )
+init : Session.Session -> String -> ( Model, Cmd Msg )
+init session subpage =
+    ( Model session subpage, Cmd.none )
 
 
 
@@ -45,6 +46,6 @@ update msg model =
 
 view : Model -> Browser.Document Msg
 view model =
-    { title = "No op"
-    , body = [ text "No op" ]
+    { title = "Page One"
+    , body = [ text "Page One", text <| "subpage: " ++ model.subpage ]
     }

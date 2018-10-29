@@ -21,7 +21,7 @@ type alias Model =
 
 init : Session.Session -> ( Model, Cmd Msg )
 init session =
-    ( { session = session }, Cmd.none )
+    ( Model session, Cmd.none )
 
 
 

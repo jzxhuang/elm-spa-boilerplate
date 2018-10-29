@@ -1,27 +1,108 @@
 module Main exposing (Model, Msg(..), init, main, subscriptions, update, view)
 
+-- import Page.NewPage as NewPage
+
 import Browser
 import Browser.Events
 import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Page.DoesNotExist as DoesNotExist
 import Page.PageOne as PageOne
+import Page.PageWithSubpage as PageWithSubpage
 import Page.Top as Top
-import Pages
 import Session
 import Url
-import Url.Parser as Parser
+import Url.Parser as Parser exposing ((</>))
 
 
 
+{-
+   ███╗   ███╗ ██████╗ ██████╗ ███████╗██╗
+   ████╗ ████║██╔═══██╗██╔══██╗██╔════╝██║
+   ██╔████╔██║██║   ██║██║  ██║█████╗  ██║
+   ██║╚██╔╝██║██║   ██║██║  ██║██╔══╝  ██║
+   ██║ ╚═╝ ██║╚██████╔╝██████╔╝███████╗███████╗
+   ╚═╝     ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝╚══════╝
+
+-}
 -- MODEL
 
 
 type alias Model =
     { key : Nav.Key
-    , page : Pages.Page
+    , page : Page
     }
+
+
+
+-- TYPES
+
+
+type Page
+    = NotFound Session.Session
+    | Top Top.Model
+      -- | NewPage NewPage.Model
+    | PageOne PageOne.Model
+    | PageWithSubpage PageWithSubpage.Model
+
+
+
+-- FUNCTIONS
+-- Helper functions to send a command from Main to a page
+
+
+mapTopMsg : Model -> ( Top.Model, Cmd Top.Msg ) -> ( Model, Cmd Msg )
+mapTopMsg model ( m, cmds ) =
+    ( { model | page = Top m }, Cmd.map TopMsg cmds )
+
+
+mapPageOneMsg : Model -> ( PageOne.Model, Cmd PageOne.Msg ) -> ( Model, Cmd Msg )
+mapPageOneMsg model ( m, cmds ) =
+    ( { model | page = PageOne m }, Cmd.map PageOneMsg cmds )
+
+
+
+-- mapNewPageMsg : Model -> ( NewPage.Model, Cmd NewPage.Msg ) -> ( Model, Cmd Msg )
+-- mapNewPageMsg model ( m, cmds ) =
+--     ( { model | page = NewPage m }, Cmd.map NewPageMsg cmds )
+
+
+mapPageWithSubpageMsg : Model -> ( PageWithSubpage.Model, Cmd PageWithSubpage.Msg ) -> ( Model, Cmd Msg )
+mapPageWithSubpageMsg model ( m, cmds ) =
+    ( { model | page = PageWithSubpage m }, Cmd.map PageWithSubpageMsg cmds )
+
+
+
+-- ROUTING
+
+
+routeUrl : Url.Url -> Model -> ( Model, Cmd Msg )
+routeUrl url model =
+    let
+        session =
+            extractSession model
+
+        pageNotFound =
+            ( { model | page = NotFound session }, Cmd.none )
+    in
+    Maybe.withDefault pageNotFound <| Parser.parse (parser model session) url
+
+
+parser : Model -> Session.Session -> Parser.Parser (( Model, Cmd Msg ) -> a) a
+parser model session =
+    Parser.oneOf
+        [ route Parser.top (mapTopMsg model (Top.init session))
+        , route (Parser.s "pageone") (mapPageOneMsg model (PageOne.init session))
+        , route (Parser.s "pagewithsubpage" </> Parser.string)
+            (\subpage -> mapPageWithSubpageMsg model (PageWithSubpage.init session subpage))
+
+        --, route (Parser.s "newpage") (mapNewPageMsg model (NewPage.init session))
+        ]
+
+
+route : Parser.Parser a b -> a -> Parser.Parser (b -> c) c
+route parser_ handler =
+    Parser.map handler parser_
 
 
 
@@ -34,10 +115,19 @@ init flags url key =
         _ =
             Debug.log "url" url
     in
-    stepUrl url { key = key, page = Pages.DoesNotExist Session.empty }
+    routeUrl url <| Model key (NotFound Session.empty)
 
 
 
+{-
+   ██╗   ██╗██████╗ ██████╗  █████╗ ████████╗███████╗
+   ██║   ██║██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝██╔════╝
+   ██║   ██║██████╔╝██║  ██║███████║   ██║   █████╗
+   ██║   ██║██╔═══╝ ██║  ██║██╔══██║   ██║   ██╔══╝
+   ╚██████╔╝██║     ██████╔╝██║  ██║   ██║   ███████╗
+    ╚═════╝ ╚═╝     ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝
+
+-}
 -- UPDATE
 
 
@@ -46,7 +136,9 @@ type Msg
     | UrlChanged Url.Url
     | OnWindowResize Int Int
     | TopMsg Top.Msg
+      -- | NewPageMsg NewPage.Msg
     | PageOneMsg PageOne.Msg
+    | PageWithSubpageMsg PageWithSubpage.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -61,87 +153,45 @@ update message model =
                     ( model, Nav.load href )
 
         UrlChanged url ->
-            stepUrl url model
+            routeUrl url model
 
         OnWindowResize width height ->
+            -- Handle this however you'd like for responsive web design!
+            -- ie, Send a message to the active page indicating the new window size
             ( model, Cmd.none )
 
         TopMsg msg ->
             case Debug.log "top" model.page of
-                Pages.Top topModel ->
-                    stepTop model (Top.update msg topModel)
+                Top m ->
+                    mapTopMsg model (Top.update msg m)
 
                 _ ->
                     ( model, Cmd.none )
 
         PageOneMsg msg ->
             case Debug.log "p1" model.page of
-                Pages.PageOne m ->
-                    let
-                        ( modelPageOne, cmdPageOne ) =
-                            PageOne.update msg m
-                    in
-                    ( { model | page = Pages.PageOne modelPageOne }, Cmd.map PageOneMsg cmdPageOne )
+                PageOne m ->
+                    mapPageOneMsg model (PageOne.update msg m)
 
-                -- stepPageOne model (PageOne.update msg pageOneModel)
+                _ ->
+                    ( model, Cmd.none )
+
+        PageWithSubpageMsg msg ->
+            case model.page of
+                PageWithSubpage m ->
+                    mapPageWithSubpageMsg model (PageWithSubpage.update msg m)
+
                 _ ->
                     ( model, Cmd.none )
 
 
 
--- ROUTING FROM PACKAGE.ELM-LANG.ORG
--- These functions send a command to a page
-
-
-stepPageOne : Model -> ( PageOne.Model, Cmd PageOne.Msg ) -> ( Model, Cmd Msg )
-stepPageOne model ( pageOne, cmds ) =
-    ( { model | page = Pages.PageOne pageOne }
-    , Cmd.map PageOneMsg cmds
-    )
-
-
-stepTop : Model -> ( Top.Model, Cmd Top.Msg ) -> ( Model, Cmd Msg )
-stepTop model ( top, cmds ) =
-    ( { model | page = Pages.Top top }
-    , Cmd.map TopMsg cmds
-    )
-
-
-stepUrl : Url.Url -> Model -> ( Model, Cmd Msg )
-stepUrl url model =
-    let
-        session =
-            extractSession model
-
-        parser =
-            Parser.oneOf
-                [ Parser.map (stepTop model (Top.init session)) Parser.top
-                , Parser.map (stepPageOne model (PageOne.init session)) (Parser.s "pageone")
-                ]
-    in
-    case Debug.log "msg" <| Parser.parse parser url of
-        Just answer ->
-            answer
-
-        Nothing ->
-            ( { model | page = Pages.DoesNotExist session }
-            , Cmd.none
-            )
-
-
-
--- Parses url and navigates to the correct page by updating the Model and sending the appropriate command
-
-
-coolparser : Model -> Session.Session -> Parser.Parser (( Model, Cmd Msg ) -> a) a
-coolparser model session =
-    Parser.oneOf
-        [ Parser.map (stepTop model (Top.init session)) Parser.top
-        , Parser.map (stepPageOne model (PageOne.init session)) (Parser.s "pageone")
-        ]
-
-
-
+--    NewPage msg ->
+--        case model.page of
+--            NewPage m ->
+--                mapNewPageMsg model (NewPage.update msg m)
+--            _ ->
+--                ( model, Cmd.none )
 -- SUBSCRIPTIONS
 
 
@@ -151,25 +201,43 @@ subscriptions model =
 
 
 
+{-
+   ██╗   ██╗██╗███████╗██╗    ██╗
+   ██║   ██║██║██╔════╝██║    ██║
+   ██║   ██║██║█████╗  ██║ █╗ ██║
+   ╚██╗ ██╔╝██║██╔══╝  ██║███╗██║
+    ╚████╔╝ ██║███████╗╚███╔███╔╝
+     ╚═══╝  ╚═╝╚══════╝ ╚══╝╚══╝
+
+-}
 -- VIEW
 
 
 view : Model -> Browser.Document Msg
 view model =
     case model.page of
-        Pages.DoesNotExist _ ->
+        NotFound _ ->
             { title = "Page Not Found"
             , body = [ text "Does not exist" ]
             }
 
-        Pages.PageOne _ ->
+        PageOne _ ->
             { title = "Page One Found"
             , body = [ text "Page One" ]
             }
 
+        PageWithSubpage _ ->
+            { title = "New Page"
+            , body = [ text "New Page" ]
+            }
+
+        -- NewPage _ ->
+        --     { title = "New Page"
+        --     , body = [ text "New Page" ]
+        --     }
         _ ->
             { title = "top"
-            , body = [ text "top", ul [] [ viewLink "/pageone", viewLink "/notexist", viewLink "/pageone/kaldjf" ] ]
+            , body = [ text "top", ul [] [ viewLink "/pageone", viewLink "/notexist", viewLink "/pageone/kaldjf", viewLink "pagewithsubpage/pqwoef" ] ]
             }
 
 
@@ -181,13 +249,18 @@ viewLink path =
 extractSession : Model -> Session.Session
 extractSession model =
     case model.page of
-        Pages.DoesNotExist session ->
+        NotFound session ->
             session
 
-        Pages.Top m ->
+        Top m ->
             m.session
 
-        Pages.PageOne m ->
+        -- NewPage m ->
+        -- m.session
+        PageOne m ->
+            m.session
+
+        PageWithSubpage m ->
             m.session
 
 
