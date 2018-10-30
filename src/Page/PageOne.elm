@@ -4,6 +4,7 @@ import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Session
+import Viewer
 
 
 
@@ -43,8 +44,18 @@ update msg model =
 -- VIEW
 
 
-view : Model -> Browser.Document Msg
+view : Model -> Viewer.Details Msg
 view model =
-    { title = "Page One"
-    , body = [ text "Page One" ]
+    { title = toTitle
+    , body =
+        [ text "Page One"
+        ]
     }
+
+
+
+-- HELPERS
+
+
+toTitle =
+    "Page One"

@@ -1,4 +1,4 @@
-module Viewer exposing (viewFooter, viewHeader)
+module Viewer exposing (Details, view, viewFooter, viewHeader)
 
 import Browser
 import Html exposing (..)
@@ -11,7 +11,7 @@ import Utils
 
 type alias Details msg =
     { title : String
-    , children : List (Html msg)
+    , body : List (Html msg)
     }
 
 
@@ -19,11 +19,12 @@ type alias Details msg =
 -- VIEW
 
 
-view : Route.Route -> Details a -> Browser.Document msg
-view route details =
+view : (a -> msg) -> Details a -> Route.Route -> Browser.Document msg
+view msg details route =
     { title = details.title ++ Utils.genericTitle
     , body =
         [ viewHeader route
+        , Html.map msg <| div [] details.body
         , viewFooter
         ]
     }

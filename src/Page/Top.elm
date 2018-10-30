@@ -1,9 +1,12 @@
 module Page.Top exposing (Model, Msg(..), init, update, view)
 
 import Browser
+import Browser.Events
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Session
+import Utils exposing (..)
+import Viewer
 
 
 
@@ -43,8 +46,19 @@ update msg model =
 -- VIEW
 
 
-view : Model -> Browser.Document Msg
+view : Model -> Viewer.Details Msg
 view model =
-    { title = "Top"
-    , body = [ text "Top" ]
+    { title = toTitle
+    , body =
+        [ text "Top"
+        , ul [] [ viewLink "/pageone", viewLink "/notexist", viewLink "/pageone/kaldjf", viewLink "/pagewithsubpage/pqwoef", viewLink "/pagewithsubpage/" ]
+        ]
     }
+
+
+
+-- HELPERS
+
+
+toTitle =
+    "Home"
