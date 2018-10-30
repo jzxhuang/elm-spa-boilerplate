@@ -1,17 +1,17 @@
-module Session exposing (Session, WindowSize, empty)
+module Session exposing (Session, WindowSize, init)
+
+import Types
 
 
 type alias Session =
-    { someData : Maybe String
-
-    -- windowsize
-    -- time started
+    { timeAppStarted : Int
+    , windowSize : Types.WindowSize
     }
 
 
-empty : Session
-empty =
-    Session Nothing
+init : Types.Flags -> Session
+init flags =
+    Session flags.timeAppStarted flags.windowSize
 
 
 

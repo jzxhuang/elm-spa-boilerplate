@@ -24,6 +24,7 @@ view msg details route =
     { title = details.title ++ Utils.genericTitle
     , body =
         [ viewHeader route
+        , img [ src "/logo.svg" ] []
         , Html.map msg <| div [] details.body
         , viewFooter
         ]

@@ -12,6 +12,7 @@ import Page.PageWithSubpage as PageWithSubpage
 import Page.Top as Top
 import Route
 import Session
+import Types
 import Url
 import Url.Parser as Parser exposing ((</>))
 import Viewer
@@ -50,13 +51,13 @@ type alias Model =
 -- INIT
 
 
-init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
+init : Types.Flags -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
     let
         _ =
-            Debug.log "url" url
+            Debug.log "Flags " flags
     in
-    routeUrl url <| Model key Route.NotFound (NotFound Session.empty)
+    routeUrl url <| Model key Route.NotFound (NotFound <| Session.init flags)
 
 
 
@@ -84,7 +85,7 @@ type Msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
-    case Debug.log "xxx" message of
+    case message of
         LinkClicked urlRequest ->
             case urlRequest of
                 Browser.Internal url ->
@@ -102,7 +103,7 @@ update message model =
             ( model, Cmd.none )
 
         TopMsg msg ->
-            case Debug.log "top" model.page of
+            case model.page of
                 Top m ->
                     mapTopMsg model (Top.update msg m)
 
@@ -110,7 +111,7 @@ update message model =
                     ( model, Cmd.none )
 
         PageOneMsg msg ->
-            case Debug.log "p1" model.page of
+            case model.page of
                 PageOne m ->
                     mapPageOneMsg model (PageOne.update msg m)
 
@@ -181,7 +182,7 @@ view model =
 -- MAIN
 
 
-main : Program () Model Msg
+main : Program Types.Flags Model Msg
 main =
     Browser.application
         { init = init
