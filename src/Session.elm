@@ -1,7 +1,6 @@
 module Session exposing (Session, init)
 
 import Json.Decode
-import Route
 import Time
 import Type.Flags
 import Type.LocalStorage
@@ -10,7 +9,6 @@ import Type.LocalStorage
 type alias Session =
     { timeAppStarted : Time.Posix
     , windowSize : { width : Int, height : Int }
-    , route : Route.Route
     , localStorage : Maybe Type.LocalStorage.LocalStorage
     }
 
@@ -30,10 +28,10 @@ init flags =
     in
     case localStorage of
         Ok storage ->
-            Session posixTime flags.windowSize Route.NotFound storage
+            Session posixTime flags.windowSize storage
 
         Err _ ->
-            Session posixTime flags.windowSize Route.NotFound Nothing
+            Session posixTime flags.windowSize Nothing
 
 
 
