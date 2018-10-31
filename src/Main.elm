@@ -7,15 +7,31 @@ import Browser.Events
 import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Json.Decode
+import Json.Encode
 import Page.PageOne as PageOne
 import Page.PageWithSubpage as PageWithSubpage
 import Page.Top as Top
+import Ports
 import Route
 import Session
-import Types
+import Type.Flags
+import Type.LocalStorage
 import Url
 import Url.Parser as Parser exposing ((</>))
 import Viewer
+
+
+
+-- TYPES
+
+
+type Page
+    = NotFound Session.Session
+    | Top Top.Model
+      -- | NewPage NewPage.Model
+    | PageOne PageOne.Model
+    | PageWithSubpage PageWithSubpage.Model
 
 
 
@@ -33,7 +49,6 @@ import Viewer
 
 type alias Model =
     { key : Nav.Key
-    , route : Route.Route
     , page : Page
     }
 
@@ -51,13 +66,24 @@ type alias Model =
 -- INIT
 
 
-init : Types.Flags -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
+init : Type.Flags.Flags -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
     let
-        _ =
-            Debug.log "Flags " flags
+        localStorage =
+            Json.Decode.decodeValue Type.LocalStorage.decode flags.localStorage
+
+        ( model, cmds ) =
+            routeUrl url <| Model key (NotFound <| Session.init flags)
     in
-    routeUrl url <| Model key Route.NotFound (NotFound <| Session.init flags)
+    --  On loading the application, we read form local storage. If the object is incorrectly formatted, clear localStorage
+    case localStorage of
+        Ok success ->
+            -- ( model, cmds )
+            ( model, Cmd.batch [ cmds, Ports.toLocalStorage { token = "sometoken" } ] )
+
+        Err _ ->
+            -- If localstorage decoder failed, clear localstorage
+            ( model, Cmd.batch [ cmds, Ports.clearLocalStorage () ] )
 
 
 
@@ -77,6 +103,7 @@ type Msg
     = LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
     | OnWindowResize Int Int
+    | OnLocalStorageChange Json.Encode.Value
     | TopMsg Top.Msg
       -- | NewPageMsg NewPage.Msg
     | PageOneMsg PageOne.Msg
@@ -97,10 +124,35 @@ update message model =
         UrlChanged url ->
             routeUrl url model
 
+        -- Handle a change in localStorage! For example, update the session and send a message to the current page indicating the change
+        OnLocalStorageChange msg ->
+            let
+                localStorage =
+                    Debug.log "localstoragechange: " <| Json.Decode.decodeValue Type.LocalStorage.decode msg
+
+                session =
+                    extractSession model
+
+                newSession =
+                    case localStorage of
+                        Ok success ->
+                            { session | localStorage = success }
+
+                        Err _ ->
+                            { session | localStorage = Nothing }
+            in
+            updateSession model newSession
+
+        -- Handle this however you'd like for responsive web design! The view in Main.elm and each respective page can change depending on the window size
         OnWindowResize width height ->
-            -- Handle this however you'd like for responsive web design!
-            -- ie, Send a message to the active page indicating the new window size
-            ( model, Cmd.none )
+            let
+                session =
+                    extractSession model
+
+                windowSize =
+                    { width = width, height = height }
+            in
+            updateSession model { session | windowSize = windowSize }
 
         TopMsg msg ->
             case model.page of
@@ -118,6 +170,12 @@ update message model =
                 _ ->
                     ( model, Cmd.none )
 
+        --    NewPage msg ->
+        --        case model.page of
+        --            NewPage m ->
+        --                mapNewPageMsg model (NewPage.update msg m)
+        --            _ ->
+        --                ( model, Cmd.none )
         PageWithSubpageMsg msg ->
             case model.page of
                 PageWithSubpage m ->
@@ -125,21 +183,6 @@ update message model =
 
                 _ ->
                     ( model, Cmd.none )
-
-
-
---    NewPage msg ->
---        case model.page of
---            NewPage m ->
---                mapNewPageMsg model (NewPage.update msg m)
---            _ ->
---                ( model, Cmd.none )
--- SUBSCRIPTIONS
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.batch [ Browser.Events.onResize OnWindowResize ]
 
 
 
@@ -157,32 +200,47 @@ subscriptions model =
 
 view : Model -> Browser.Document Msg
 view model =
+    let
+        session =
+            extractSession model
+    in
     case model.page of
         NotFound _ ->
-            Viewer.view
+            Viewer.view session
                 never
                 { title = "Page Not Found"
                 , body = [ text "Uh oh! Looks like you got lost." ]
                 }
-                model.route
 
         Top m ->
-            Viewer.view TopMsg (Top.view m) model.route
+            Viewer.view session TopMsg (Top.view m)
 
         PageOne m ->
-            Viewer.view PageOneMsg (PageOne.view m) model.route
+            Viewer.view session PageOneMsg (PageOne.view m)
 
         -- NewPage _ ->
-        --     Viewer.view NewPageMsg (NewPage.view m) model.route
+        -- Viewer.view session             NewPageMsg (NewPage.view m) model.route
         PageWithSubpage m ->
-            Viewer.view PageWithSubpageMsg (PageWithSubpage.view m) model.route
+            Viewer.view session PageWithSubpageMsg (PageWithSubpage.view m)
+
+
+
+-- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.batch
+        [ Browser.Events.onResize OnWindowResize
+        , Ports.onLocalStorageChange OnLocalStorageChange
+        ]
 
 
 
 -- MAIN
 
 
-main : Program Types.Flags Model Msg
+main : Program Type.Flags.Flags Model Msg
 main =
     Browser.application
         { init = init
@@ -196,27 +254,14 @@ main =
 
 
 {-
-    ██████╗ ████████╗██╗  ██╗███████╗██████╗
-   ██╔═══██╗╚══██╔══╝██║  ██║██╔════╝██╔══██╗
-   ██║   ██║   ██║   ███████║█████╗  ██████╔╝
-   ██║   ██║   ██║   ██╔══██║██╔══╝  ██╔══██╗
-   ╚██████╔╝   ██║   ██║  ██║███████╗██║  ██║
-    ╚═════╝    ╚═╝   ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
+   ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗
+   ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝
+   █████╗  ██║   ██║██╔██╗ ██║██║        ██║   ██║██║   ██║██╔██╗ ██║███████╗
+   ██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ██║██║   ██║██║╚██╗██║╚════██║
+   ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║███████║
+   ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
 
 -}
--- TYPES
-
-
-type Page
-    = NotFound Session.Session
-    | Top Top.Model
-      -- | NewPage NewPage.Model
-    | PageOne PageOne.Model
-    | PageWithSubpage PageWithSubpage.Model
-
-
-
--- FUNCTIONS
 -- Helper functions to send a command from Main to a page
 
 
@@ -254,13 +299,36 @@ extractSession model =
         Top m ->
             m.session
 
-        -- NewPage m ->
-        -- m.session
         PageOne m ->
             m.session
 
+        -- NewPage m ->
+        -- m.session
         PageWithSubpage m ->
             m.session
+
+
+
+-- Update the session of the active page (This could be changed to send a OnSessionChange Msg rather than using init)
+-- However, I think it's better you design your pages such that initializing the page is equivalent to updating the session!
+
+
+updateSession : Model -> Session.Session -> ( Model, Cmd Msg )
+updateSession model session =
+    case model.page of
+        NotFound _ ->
+            ( { model | page = NotFound session }, Cmd.none )
+
+        Top m ->
+            mapTopMsg model (Top.init session)
+
+        PageOne m ->
+            mapPageOneMsg model (PageOne.init session)
+
+        -- NewPage m ->
+        -- mapNewPageMsg model (NewPage.init session)
+        PageWithSubpage m ->
+            mapPageWithSubpageMsg model (PageWithSubpage.init session m.subpage)
 
 
 
@@ -285,20 +353,20 @@ routeUrl url model =
         route =
             Maybe.withDefault Route.NotFound <| Parser.parse Route.parser url
 
-        newModel =
-            { model | route = route }
+        newSession =
+            { session | route = route }
     in
     case route of
         Route.NotFound ->
-            ( { newModel | page = NotFound session }, Cmd.none )
+            ( { model | page = NotFound newSession }, Cmd.none )
 
         Route.Top ->
-            mapTopMsg newModel (Top.init session)
+            mapTopMsg model (Top.init newSession)
 
         -- Route.NewPage ->
-        -- mapNewPageMsg newModel (NewPage.init session)
+        -- mapNewPageMsg newModel (NewPage.init newSession)
         Route.PageOne ->
-            mapPageOneMsg newModel (PageOne.init session)
+            mapPageOneMsg model (PageOne.init newSession)
 
         Route.PageWithSubpage subpage ->
-            mapPageWithSubpageMsg newModel (PageWithSubpage.init session subpage)
+            mapPageWithSubpageMsg model (PageWithSubpage.init newSession subpage)

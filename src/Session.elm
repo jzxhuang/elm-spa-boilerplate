@@ -1,22 +1,40 @@
-module Session exposing (Session, WindowSize, init)
+module Session exposing (Session, init)
 
-import Types
+import Json.Decode
+import Route
+import Time
+import Type.Flags
+import Type.LocalStorage
 
 
 type alias Session =
-    { timeAppStarted : Int
-    , windowSize : Types.WindowSize
+    { timeAppStarted : Time.Posix
+    , windowSize : { width : Int, height : Int }
+    , route : Route.Route
+    , localStorage : Maybe Type.LocalStorage.LocalStorage
     }
 
 
-init : Types.Flags -> Session
+
+-- Initializes a session given some flags
+
+
+init : Type.Flags.Flags -> Session
 init flags =
-    Session flags.timeAppStarted flags.windowSize
+    let
+        localStorage =
+            Debug.log "decoded" <| Json.Decode.decodeValue Type.LocalStorage.decode flags.localStorage
+
+        posixTime =
+            Time.millisToPosix flags.timeAppStarted
+    in
+    case localStorage of
+        Ok storage ->
+            Session posixTime flags.windowSize Route.NotFound storage
+
+        Err _ ->
+            Session posixTime flags.windowSize Route.NotFound Nothing
 
 
 
 -- Getters/Setters can go here
-
-
-type alias WindowSize =
-    { width : Int, height : Int }

@@ -19,12 +19,12 @@ type alias Details msg =
 -- VIEW
 
 
-view : (a -> msg) -> Details a -> Route.Route -> Browser.Document msg
-view msg details route =
+view : Session.Session -> (a -> msg) -> Details a -> Browser.Document msg
+view session msg details =
     { title = details.title ++ Utils.genericTitle
     , body =
-        [ viewHeader route
-        , img [ src "/logo.svg" ] []
+        [ viewHeader session.route
+        , Utils.logo 256
         , Html.map msg <| div [] details.body
         , viewFooter
         ]
@@ -37,10 +37,8 @@ view msg details route =
 
 viewHeader : Route.Route -> Html msg
 viewHeader route =
-    div [ style "background-color" "#eeeeee" ]
-        ([ text "Logo" ]
-            ++ List.map (toHeaderLink route) headerLinks
-        )
+    div [ style "background-color" "#eeeeee", class "header" ]
+        (viewLogo :: List.map (toHeaderLink route) headerLinks)
 
 
 
@@ -54,6 +52,15 @@ viewFooter =
         , a [ href "https://github.com/jzxhuang/elm-spa-boilerplate" ] [ text "Check it out on Github!" ]
         , text "Licenced under the MIT licence. © 2018 - present Jeffrey Huang."
         ]
+
+
+
+-- LOGO
+
+
+viewLogo : Html msg
+viewLogo =
+    a [ href "/", style "text-decoration" "none" ] [ Utils.logo 32 ]
 
 
 

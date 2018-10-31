@@ -5,6 +5,9 @@ body {
   color: #293c4b;
 }
 
+.header a {
+  padding : 10px;
+}
 h1 {
   font-size: 30px;
 }
