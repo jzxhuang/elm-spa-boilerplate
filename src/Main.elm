@@ -13,7 +13,6 @@ import Page.PageOne as PageOne
 import Page.PageWithSubpage as PageWithSubpage
 import Page.Top as Top
 import Ports
-import Route
 import Session
 import Type.Flags
 import Type.LocalStorage
@@ -225,6 +224,15 @@ view model =
 
 
 
+{-
+   ███████╗██╗   ██╗██████╗ ███████╗ ██████╗██████╗ ██╗██████╗ ████████╗██╗ ██████╗ ███╗   ██╗███████╗
+   ██╔════╝██║   ██║██╔══██╗██╔════╝██╔════╝██╔══██╗██║██╔══██╗╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝
+   ███████╗██║   ██║██████╔╝███████╗██║     ██████╔╝██║██████╔╝   ██║   ██║██║   ██║██╔██╗ ██║███████╗
+   ╚════██║██║   ██║██╔══██╗╚════██║██║     ██╔══██╗██║██╔═══╝    ██║   ██║██║   ██║██║╚██╗██║╚════██║
+   ███████║╚██████╔╝██████╔╝███████║╚██████╗██║  ██║██║██║        ██║   ██║╚██████╔╝██║ ╚████║███████║
+   ╚══════╝ ╚═════╝ ╚═════╝ ╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝╚═╝        ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
+
+-}
 -- SUBSCRIPTIONS
 
 
@@ -237,6 +245,15 @@ subscriptions model =
 
 
 
+{-
+   ███╗   ███╗ █████╗ ██╗███╗   ██╗
+   ████╗ ████║██╔══██╗██║████╗  ██║
+   ██╔████╔██║███████║██║██╔██╗ ██║
+   ██║╚██╔╝██║██╔══██║██║██║╚██╗██║
+   ██║ ╚═╝ ██║██║  ██║██║██║ ╚████║
+   ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝
+
+-}
 -- MAIN
 
 
@@ -349,24 +366,38 @@ routeUrl url model =
     let
         session =
             extractSession model
-
-        route =
-            Maybe.withDefault Route.NotFound <| Parser.parse Route.parser url
-
-        newSession =
-            { session | route = route }
     in
-    case route of
-        Route.NotFound ->
-            ( { model | page = NotFound newSession }, Cmd.none )
+    case Parser.parse (parser model session) url of
+        Just success ->
+            success
 
-        Route.Top ->
-            mapTopMsg model (Top.init newSession)
+        Nothing ->
+            ( { model | page = NotFound session }, Cmd.none )
 
-        -- Route.NewPage ->
-        -- mapNewPageMsg newModel (NewPage.init newSession)
-        Route.PageOne ->
-            mapPageOneMsg model (PageOne.init newSession)
 
-        Route.PageWithSubpage subpage ->
-            mapPageWithSubpageMsg model (PageWithSubpage.init newSession subpage)
+route : Parser.Parser a b -> a -> Parser.Parser (b -> c) c
+route parser_ handler =
+    Parser.map handler parser_
+
+
+parser : Model -> Session.Session -> Parser.Parser (( Model, Cmd Msg ) -> a) a
+parser model session =
+    Parser.oneOf
+        [ route Parser.top (mapTopMsg model (Top.init session))
+        , route (Parser.s paths.pageOne)
+            (mapPageOneMsg model (PageOne.init session))
+
+        -- , route (Parser.s paths.newPage)
+        --     (mapNewPageMsg model (NewPage.init session))
+        , route (Parser.s paths.pageWithSubpage </> Parser.string)
+            (\subpage -> mapPageWithSubpageMsg model (PageWithSubpage.init session subpage))
+        ]
+
+
+paths =
+    { top = ""
+    , pageOne = "pageone"
+    , pageWithSubpage = "pagewithsubpage"
+
+    --, newPage = "newpage"
+    }
