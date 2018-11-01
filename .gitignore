@@ -2,7 +2,7 @@
 dist/
 
 # Compiled Elm code
-elm.js
+/elm.js
 
 # Temp files generated when building for production
 temp/
