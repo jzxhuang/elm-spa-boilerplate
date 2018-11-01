@@ -1,8 +1,11 @@
 # Distribution
-build/
+dist/
 
 # Compiled Elm code
-compiled
+elm.js
+
+# Temp files generated when building for production
+temp/
 
 # elm-package generated files
 elm-stuff
@@ -11,7 +14,7 @@ elm-stuff
 repl-temp-*
 
 # Dependency directories
-node_modules
+node_modules/
 
 # Desktop Services Store on macOS
 .DS_Store
