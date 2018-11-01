@@ -8,6 +8,13 @@ import Url.Builder
 import Utils
 
 
+
+{-
+   This module builds the view. Every individual page's view function returns a Viewer.Details,
+   which is used to generate a Browser.Document msg in this module
+-}
+
+
 type alias Details msg =
     { title : String
     , body : List (Html msg)
@@ -32,9 +39,8 @@ view session msg details =
 
 
 -- HEADER
--- This header is statically generated.
--- You'd likely want this to be dynamic in some way based on active page & session
--- So, generate a header in each page's view, or in the view of Main.elm, or with another helper module
+-- This header is statically generated. You'd likely want this to be dynamic in some way based on the active page & session
+-- You could create an addtional field in Viewer.Details for a header, and create this header in Main.elm or in each individual page's view
 
 
 viewHeader : Html msg

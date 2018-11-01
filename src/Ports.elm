@@ -5,6 +5,10 @@ import Type.LocalStorage
 
 
 
+{-
+   This file holds the Ports that our application will use.
+   I have included the necessary ports for working with localStorage, as well as their respective handlers in JS
+-}
 -- Listener for change to localStorage
 
 

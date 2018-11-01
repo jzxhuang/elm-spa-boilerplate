@@ -1,17 +1,14 @@
-import './main.css';
-import { Elm } from './Main.elm';
-import registerServiceWorker from './registerServiceWorker';
+/* 
+  This file creates our Elm app, initializes it with flags and handles JavaScript interop through ports
+*/
 
 // CONFIG
 const storageName = "elm-spa-boilerplate" // key in localStorage
 
 const app = Elm.Main.init({
   flags: generateFlags(),
-  node: document.getElementById('root')
+  node: document.getElementById('elm')
 });
-
-// Uncomment this line if you would like to use service workers for a Progressive Web App! Read more at https://github.com/halfzebra/create-elm-app/blob/master/template/README.md#making-a-progressive-web-app and https://developers.google.com/web/progressive-web-apps/
-// registerServiceWorker();
 
 // Generate flags to send to our Elm app on intialization
 function generateFlags() {
@@ -48,7 +45,7 @@ app.ports.clearLocalStorage.subscribe(() => {
 
 /* ----- NOTE: TO CONSIDER ----- 
   
-  Notice how lines 39 and 46 are commented out. 
+  Notice how lines 36 and 43 are commented out. 
   It seems redundant to tell Elm about a change in localStorage that was initially triggered by Elm. 
   However, this may actually be useful! How?
   

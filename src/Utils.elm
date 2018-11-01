@@ -7,7 +7,10 @@ import Svg.Attributes as SA
 
 
 
--- Title that is appended to every page. Helps with SEO
+{-
+   Miscellaneous functions and helpers
+-}
+-- Title that is appended to every page.
 
 
 genericTitle =

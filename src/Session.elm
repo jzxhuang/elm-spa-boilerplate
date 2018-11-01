@@ -6,6 +6,14 @@ import Type.Flags
 import Type.LocalStorage
 
 
+
+{-
+   The session is used for any data that needs to be shared globally across all pages. All pages have the session in their model.
+   You can use this to store info like credentials.
+   Currently, I am storing localStorage in session, however it may be better to decode what you need from localStorage and store only that value.
+-}
+
+
 type alias Session =
     { timeAppStarted : Time.Posix
     , windowSize : { width : Int, height : Int }

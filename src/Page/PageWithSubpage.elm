@@ -8,6 +8,9 @@ import Viewer
 
 
 
+{-
+   This is a page with subpages. You can change the behaviour depending on the subpage path!
+-}
 -- MODEL
 
 
