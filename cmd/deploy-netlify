@@ -1,0 +1,11 @@
+#!/bin/bash
+# THIS SCRIPT IS USED FOR DEPLOYING MY SITE ON NETLIFY - DO NOT RUN THIS 
+# YOU CAN SAFELY DELETE THIS 
+
+npm install -g elm
+cmd/build
+touch dist/_redirects
+echo "/* /index.html 200" >> dist/_redirects
+
+
+# TODO : minify html, css
