@@ -29,7 +29,7 @@ init : Type.Flags.Flags -> Session
 init flags =
     let
         localStorage =
-            Debug.log "decoded" <| Json.Decode.decodeValue Type.LocalStorage.decode flags.localStorage
+            Json.Decode.decodeValue Type.LocalStorage.decode flags.localStorage
 
         posixTime =
             Time.millisToPosix flags.timeAppStarted

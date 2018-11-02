@@ -127,7 +127,7 @@ update message model =
         OnLocalStorageChange msg ->
             let
                 localStorage =
-                    Debug.log "localstoragechange: " <| Json.Decode.decodeValue Type.LocalStorage.decode msg
+                    Json.Decode.decodeValue Type.LocalStorage.decode msg
 
                 session =
                     extractSession model
