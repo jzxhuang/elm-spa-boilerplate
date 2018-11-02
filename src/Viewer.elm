@@ -30,8 +30,9 @@ view session msg details =
     { title = details.title ++ Utils.genericTitle
     , body =
         [ viewHeader
-        , Utils.logo 256
-        , Html.map msg <| div [] details.body
+
+        -- , Utils.logo 256
+        , Html.map msg <| div [ class "container", class "main", style "height" (String.fromInt (session.windowSize.height - headerHeight - footerHeight) ++ "px") ] details.body
         , viewFooter
         ]
     }
@@ -45,15 +46,16 @@ view session msg details =
 
 viewHeader : Html msg
 viewHeader =
-    div [ style "background-color" "#eeeeee", class "header" ]
-        (viewLogo
-            :: [ a [ href "/" ] [ text "Home" ]
-               , a [ href "pageone" ] [ text "Page One" ]
-               , a [ href "pagewithsubpage/hello" ] [ text "Page With Subpage" ]
+    div [ class "header", class "container" ]
+        [ div [ class "logo" ] [ viewLogo ]
+        , div [ class "nav-links" ]
+            [ a [ href "/" ] [ text "Home" ]
+            , a [ href "/pageone" ] [ text "Page One" ]
+            , a [ href "/pagewithsubpage/hello" ] [ text "Page With Subpage" ]
 
-               --    , a [ href "newpage" ] [ text "New Page" ]
-               ]
-        )
+            --    , a [ href "newpage" ] [ text "New Page" ]
+            ]
+        ]
 
 
 
@@ -62,10 +64,10 @@ viewHeader =
 
 viewFooter : Html msg
 viewFooter =
-    div [ class "footer" ]
-        [ text "A simple boilerplate for Single Page Applications in Elm. "
+    div [ class "footer", class "container" ]
+        [ text "A simple, no-frills boilerplate for creating robust Single Page Applications (SPAs) in Elm."
         , a [ href "https://github.com/jzxhuang/elm-spa-boilerplate" ] [ text "Check it out on Github!" ]
-        , text "Licenced under the MIT licence. © 2018 - present Jeffrey Huang."
+        , text "© 2018 - present Jeffrey Huang."
         ]
 
 
@@ -76,3 +78,15 @@ viewFooter =
 viewLogo : Html msg
 viewLogo =
     a [ href "/", style "text-decoration" "none" ] [ Utils.logo 32 ]
+
+
+
+-- STYLING HELPERS (lazy, hard-coded styling)
+
+
+headerHeight =
+    60
+
+
+footerHeight =
+    60

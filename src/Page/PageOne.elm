@@ -48,7 +48,8 @@ view : Model -> Viewer.Details Msg
 view model =
     { title = toTitle
     , body =
-        [ text "Page One"
+        [ h1 [] [ text "Page One - This is a page in your appplication." ]
+        , div [] [ text "This page should be filled with content..." ]
         ]
     }
 

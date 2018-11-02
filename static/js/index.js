@@ -1,7 +1,3 @@
-/* 
-  This file creates our Elm app, initializes it with flags and handles JavaScript interop through ports
-*/
-
 // CONFIG
 const storageName = "elm-spa-boilerplate" // key in localStorage
 
@@ -9,6 +5,8 @@ const app = Elm.Main.init({
   flags: generateFlags(),
   node: document.getElementById('elm')
 });
+
+registerServiceWorker();
 
 // Generate flags to send to our Elm app on intialization
 function generateFlags() {

@@ -13,7 +13,7 @@ The goal of this project is to provide a minimalist starting point for your web 
 ### Highlights
 
 * Client-side routing that uses [pushState navigation](https://developer.mozilla.org/en-US/docs/Web/API/History_API) and the forward slash `/` as the path separator.
-* Search Engine Optimization (SEO) friendly - Unique Title and Meta description for each page.
+* Search Engine Optimization (SEO) friendly - unique Title for each page.
 * Support for localStorage, with the necessary ports and JS handlers already initalized.
 * Some helpful bash scripts to bundle and minimize files for production-ready code.
 * Well-commented code!

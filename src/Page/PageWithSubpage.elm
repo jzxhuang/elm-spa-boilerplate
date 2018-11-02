@@ -52,7 +52,9 @@ view : Model -> Viewer.Details Msg
 view model =
     { title = toTitle model
     , body =
-        [ text <| "Page With Subpage: " ++ model.subpage
+        [ h1 [] [ text "Page With Subpage - this is a page that can handle subpaths in its routing!" ]
+        , div [] [ text "The subpath could be anything, or something specific, like a string or integer. You could also have many subpaths if you wanted!" ]
+        , div [] [ text <| "The current subpath is : " ++ model.subpage ]
         ]
     }
 
