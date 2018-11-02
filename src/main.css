@@ -53,7 +53,9 @@ div.footer div {
 }
 
 div.footer {
+  flex-wrap: wrap;
   align-items: center;
+  text-align: center;
   font-size: 14px;
   height: 36px;
   padding: 12px;
@@ -62,7 +64,13 @@ div.footer {
   border-top: 1px solid rgba(219, 219, 219, 1);
 }
 
-img {
-  margin: 20px 0;
-  max-width: 200px;
+/* 404 Page */
+div.not-found {
+  display: flex;
+  flex: 1;
+  flex-flow: column wrap;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: rgb(155, 155, 155);
 }

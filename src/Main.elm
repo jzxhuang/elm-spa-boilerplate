@@ -205,11 +205,7 @@ view model =
     in
     case model.page of
         NotFound _ ->
-            Viewer.view session
-                never
-                { title = "Page Not Found"
-                , body = [ text "Uh oh! Looks like you got lost." ]
-                }
+            Viewer.view session never Viewer.notFound
 
         Top m ->
             Viewer.view session TopMsg (Top.view m)

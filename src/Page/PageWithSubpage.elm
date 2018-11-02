@@ -48,7 +48,7 @@ update msg model =
 -- VIEW
 
 
-view : Model -> Viewer.Details Msg
+view : Model -> Viewer.Details msg
 view model =
     { title = toTitle model
     , body =

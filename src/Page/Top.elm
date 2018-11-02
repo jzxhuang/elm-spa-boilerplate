@@ -49,7 +49,7 @@ update msg model =
 -- VIEW
 
 
-view : Model -> Viewer.Details Msg
+view : Model -> Viewer.Details msg
 view model =
     { title = toTitle
     , body =
@@ -57,9 +57,9 @@ view model =
         , div [] [ text "This is a boilerplate for writing Single Page Applications in Elm. It is written in Elm with no JavaScript aside from usage of localStorage." ]
         , div [] [ text "Some highlights of this boilerplate:" ]
         , highlights
-        , div [] [ text "Demo of client-side routing using pushstate." ]
+        , div [] [ text "Here's some links to try out the client-side routing:" ]
         , ul [] [ viewLink "/pageone", viewLink "/pagewithsubpage/subpage-name", viewLink "/pagewithsubpage/adpoifjawef" ]
-        , div [] [ text "Handle 404 errors however you'd like (all these pages do not exist)" ]
+        , div [] [ text "You can handle 404 errors however you'd like - for exampple, rendering a static page, or redirecting to the home page. Here's a bunch of links that route to the 404 page:" ]
         , ul [] [ viewLink "/notexist", viewLink "/invalidpage", viewLink "/pageone/kaldjf", viewLink "/pagewithsubpage/" ]
         ]
     }
@@ -78,6 +78,7 @@ highlights =
         [ li [] [ text "Client-side routing that uses pushState navigation and the forward slash `/` as the path separator." ]
         , li [] [ text "Search Engine Optimization (SEO) friendly - unique Title for each page." ]
         , li [] [ text "Support for localStorage, with the necessary ports and JS handlers already initalized." ]
-        , li [] [ text "Some helpful bash scripts to bundle and minimize files for production-ready code." ]
+        , li [] [ text "Support for responsive site design by listening for window size changes and always storing window size in the model." ]
+        , li [] [ text "Built with webpack." ]
         , li [] [ text "Well-commented code!" ]
         ]

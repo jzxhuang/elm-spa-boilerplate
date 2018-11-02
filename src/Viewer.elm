@@ -1,4 +1,4 @@
-module Viewer exposing (Details, view, viewFooter, viewHeader)
+module Viewer exposing (Details, notFound, view)
 
 import Browser
 import Html exposing (..)
@@ -69,6 +69,27 @@ viewFooter =
         , a [ href "https://github.com/jzxhuang/elm-spa-boilerplate" ] [ text "Check it out on Github!" ]
         , text "© 2018 - present Jeffrey Huang."
         ]
+
+
+
+-- 404 PAGE (NotFound)
+
+
+notFound : Details msg
+notFound =
+    { title = "Page Not Found"
+    , body =
+        [ div [ class "not-found" ]
+            [ div [ style "font-size" "12em" ] [ text "404" ]
+            , h1 [ style "font-size" "3.5em" ] [ text "Page Not Found" ]
+            , h3 [ style "font-size" "1.5em" ]
+                [ text "Oops - Looks like you got lost or clicked a bad link! "
+                , a [ href "/" ] [ text "Click here " ]
+                , text "to go back to the home page."
+                ]
+            ]
+        ]
+    }
 
 
 

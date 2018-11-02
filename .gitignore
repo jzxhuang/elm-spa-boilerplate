@@ -1,4 +1,4 @@
-# Distribution
+# Production Files
 build/
 
 # Compiled Elm code
@@ -10,7 +10,7 @@ elm-stuff
 # elm-repl generated files
 repl-temp-*
 
-# Dependency directories
+# Node dependency directories
 node_modules/
 
 # Desktop Services Store on macOS
