@@ -1,0 +1,14 @@
+#!/bin/bash
+# See https://guide.elm-lang.org/optimization/asset_size.html for an overview on minifying Elm generated JS with UglifyJS
+
+printf "\n\e[0;32m🍣   Minifying HTML/CSS/JS...\e[0m\n\n"
+
+# UglifyJS - minifies JS
+./node_modules/.bin/uglifyjs dist/elm.js --compress 'pure_funcs="F2,F3,F4,F5,F6,F7,F8,F9,A2,A3,A4,A5,A6,A7,A8,A9",pure_getters,keep_fargs=false,unsafe_comps,unsafe' | uglifyjs --mangle --output=dist/elm.js
+./node_modules/.bin/uglifyjs dist/static/js/index.js --compress --mangle --toplevel -o dist/static/js/index.js
+
+# PostCSS using Autoprefixer for compatability & cssnano for minification
+./node_modules/.bin/postcss static/css -d dist/static/css -u autoprefixer cssnano --no-map
+
+# html-minifier - minifies HTML
+./node_modules/.bin/html-minifier index.html -o dist/index.html --minify-css --minify-js --collapse-whitespace --remove-comments

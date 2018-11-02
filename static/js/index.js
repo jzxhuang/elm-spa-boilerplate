@@ -14,7 +14,10 @@ const app = Elm.Main.init({
 function generateFlags() {
   return {
     timeAppStarted: Date.now(),
-    windowSize: { width: window.innerWidth, height: window.innerHeight },
+    windowSize: {
+      width: window.innerWidth,
+      height: window.innerHeight
+    },
     localStorage: localStorage.getItem(storageName)
   };
 }
@@ -45,7 +48,7 @@ app.ports.clearLocalStorage.subscribe(() => {
 
 /* ----- NOTE: TO CONSIDER ----- 
   
-  Notice how lines 36 and 43 are commented out. 
+  Notice how lines 39 and 46 are commented out. 
   It seems redundant to tell Elm about a change in localStorage that was initially triggered by Elm. 
   However, this may actually be useful! How?
   

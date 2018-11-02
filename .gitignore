@@ -4,9 +4,6 @@ dist/
 # Compiled Elm code
 /elm.js
 
-# Temp files generated when building for production
-temp/
-
 # elm-package generated files
 elm-stuff
 
