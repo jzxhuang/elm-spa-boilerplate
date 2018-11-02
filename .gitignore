@@ -1,5 +1,4 @@
 # Distribution
-dist/
 build/
 
 # Compiled Elm code

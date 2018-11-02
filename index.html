@@ -2,6 +2,16 @@
 <html lang="en">
 
 <head>
+	<!-- *** IMPORTANT **
+	This index.html file is designed to be used only if you do not want to use create-elm-app for some reason. 
+	You will need to comment out the 'import' statements at the top of src/index.js
+	There will likely be some issues with the client-side routing in using other HTTP servers.
+	I would highly recommend using create-elm-app to avoid these potential issues, unless you are very familiar with SPA and handling redirection and routing URLs with subpaths.
+
+	If you use create-elm-app, you can safely delete this file.
+
+	*** IMPORTANT ***
+	-->
 	<title>Elm SPA Boilerplate</title>
 	<meta charset="utf-8">
 	<meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -13,7 +23,7 @@
 	<link rel="shortcut icon" href="static/favicon.ico">
 
 	<!-- Your custom styles -->
-	<link rel="stylesheet" type="text/css" href="/static/css/main.css">
+	<link rel="stylesheet" type="text/css" href="/src/main.css">
 
 	<!-- The compied Elm code from elm-live -->
 	<script src="elm.js"></script>
@@ -26,7 +36,7 @@
 	<div id="elm"></div>
 
 	<!-- Our custom javascript that initializes flags and handles ports  -->
-	<script src="static/js/index.js"></script>
+	<script src="src/index.js"></script>
 </body>
 
 </html>

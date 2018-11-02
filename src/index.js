@@ -12,7 +12,7 @@ const app = Elm.Main.init({
   node: document.getElementById('elm')
 });
 
-registerServiceWorker();
+registerServiceWorker(); // Don't want service workers? Just comment this line out
 
 // Generate flags to send to our Elm app on intialization
 function generateFlags() {
@@ -52,7 +52,7 @@ app.ports.clearLocalStorage.subscribe(() => {
 
 /* ----- NOTE: TO CONSIDER ----- 
   
-  Notice how lines 39 and 46 are commented out. 
+  Notice how lines 43 and 50 are commented out. 
   It seems redundant to tell Elm about a change in localStorage that was initially triggered by Elm. 
   However, this may actually be useful! How?
   

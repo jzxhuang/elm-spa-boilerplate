@@ -1,6 +1,6 @@
 {
   "short_name": "Elm SPA Boilerplate",
-  "name": "Boilerplate for creating SPA apps in Elm",
+  "name": "Elm SPA Boilerplate",
   "icons": [{
     "src": "favicon.ico",
     "sizes": "192x192",

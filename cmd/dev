@@ -1,3 +1,0 @@
-#!/bin/bash
-printf "\n\e[0;32m🍣   Starting \"elm-live\" on http://localhost:8000 ...\e[0m\n\n"
-elm-live  src/Main.elm --port=8000 -u -- --output=elm.js --debug

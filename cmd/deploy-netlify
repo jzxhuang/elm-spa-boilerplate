@@ -2,14 +2,7 @@
 # ----- THIS SCRIPT IS USED FOR DEPLOYING MY SITE ON NETLIFY - DO NOT RUN THIS!!! ----- 
 # YOU CAN SAFELY DELETE THIS FILE
 
-# npm install -g elm
-# cmd/prod
-# touch dist/_redirects
-# echo "/* /index.html 200" >> dist/_redirects
-
 npm install -g elm
-npm install -g create-elm-app
 elm-app build
-mv build dist
-touch dist/_redirects
-echo "/* /index.html 200" >> dist/_redirects
+touch build/_redirects
+echo "/* /index.html 200" >> build/_redirects
