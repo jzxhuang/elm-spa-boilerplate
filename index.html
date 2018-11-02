@@ -1,17 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<!-- 
+*** IMPORTANT **
+	This index.html file is to be used only if you do not want to use create-elm-app. If you're using create-elm-app, it's safe to delete this file!
+	
+	How to use other dev servers (generic instructions)
+	* Compile the Elm code. `elm make src/Main.elm --output=elm.js --debug`
+	* Modify `src/index.js`. Comment out all the 'import' statements at the top of the file, and line 15 (unless you are building with webpack).
+	* Run your HTTP-server. Specify `index.html` as the default file if required.
+	* Restructure the project, deleting/moving files as needed.
+
+	Note that all other Elm dev servers I've tried still have some issues with `pushState` and 404 redirection when routing URLs with subpaths, and thus do not fully support SPAs.
+	Thus, I would highly recommend using create-elm-app to avoid these potential issues, unless you are very familiar with SPAs.
+
+	Again, if you use create-elm-app, you can safely delete this file.
+
+*** IMPORTANT ***
+-->
+
 <head>
-	<!-- *** IMPORTANT **
-	This index.html file is designed to be used only if you do not want to use create-elm-app for some reason. 
-	You will need to comment out the 'import' statements at the top of src/index.js
-	There will likely be some issues with the client-side routing in using other HTTP servers.
-	I would highly recommend using create-elm-app to avoid these potential issues, unless you are very familiar with SPA and handling redirection and routing URLs with subpaths.
 
-	If you use create-elm-app, you can safely delete this file.
-
-	*** IMPORTANT ***
-	-->
 	<title>Elm SPA Boilerplate</title>
 	<meta charset="utf-8">
 	<meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -19,11 +28,11 @@
 	<meta name="theme-color" content="#000000">
 	<meta name="description" content="A simple, no-frills boilerplate for creating robust Single Page Applications (SPAs) in Elm.">
 	<!-- manifest.json provides metadata used when your web app is added to the homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/ -->
-	<link rel="manifest" href="static/manifest.json">
-	<link rel="shortcut icon" href="static/favicon.ico">
+	<link rel="manifest" href="public/manifest.json">
+	<link rel="shortcut icon" href="public/favicon.ico">
 
 	<!-- Your custom styles -->
-	<link rel="stylesheet" type="text/css" href="/src/main.css">
+	<link rel="stylesheet" type="text/css" href="src/css/main.css">
 
 	<!-- The compied Elm code from elm-live -->
 	<script src="elm.js"></script>

@@ -2,12 +2,12 @@
   "name": "elm-spa-boilerplate",
   "version": "1.0.0",
   "description": "A simple, barebones boilerplate for creating robust Single Page Applications (SPAs) in Elm",
-  "main": "elm.js",
   "directories": {
     "test": "tests"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "elm-app build"
   },
   "repository": {
     "type": "git",
@@ -19,7 +19,7 @@
     "url": "https://github.com/jzxhuang/elm-spa-boilerplate/issues"
   },
   "homepage": "https://github.com/jzxhuang/elm-spa-boilerplate#readme",
-  "dependencies": {
+  "devDependencies": {
     "create-elm-app": "^2.2.0"
   }
 }

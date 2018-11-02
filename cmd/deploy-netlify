@@ -1,8 +1,0 @@
-#!/bin/bash
-# ----- THIS SCRIPT IS USED FOR DEPLOYING MY SITE ON NETLIFY - DO NOT RUN THIS!!! ----- 
-# YOU CAN SAFELY DELETE THIS FILE
-
-npm install -g elm
-elm-app build
-touch build/_redirects
-echo "/* /index.html 200" >> build/_redirects
