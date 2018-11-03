@@ -22,7 +22,7 @@ function generateFlags() {
       width: window.innerWidth,
       height: window.innerHeight
     },
-    localStorage: localStorage.getItem(storageName)
+    localStorage: JSON.parse(localStorage.getItem(storageName)) || null
   };
 }
 
@@ -31,7 +31,7 @@ function generateFlags() {
 window.addEventListener("storage", event => {
   if (event.storageArea === localStorage && event.key === storageName) {
     // console.log(event.newValue)
-    app.ports.onLocalStorageChange.send(JSON.parse(event.newValue));
+    app.ports.onLocalStorageChange.send(JSON.parse(event.newValue) || null);
   }
 });
 

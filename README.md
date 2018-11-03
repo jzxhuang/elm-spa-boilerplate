@@ -66,11 +66,23 @@ This will create the `build/` folder with production ready files.
 
 If you're looking for some free web hosting options, I recommend checking out [Surge] or [Netlify].
 
+## Usage
+
+### Adding and Removing Pages
+
+### Routing with Hashes
+
+### JavaScript Interop (Ports)
+
+Add your handlers for ports in `src/index.js` (or create a new file if you'd like). Define Elm ports in `src/Ports.elm`. This file is imported in `src/Main.elm`, and can be imported in other pages as needed. Read more about JavaScript interop with ports in Elm [here][elm ports]
+
 ### Configuration
 
-If you want to add images, setup environment variables, use a CSS Preprocessor or elm-css, it's all possible in create-elm-app. Check out the docs [here][create elm app docs].
+For most of your configuration needs, like adding images, setting up environment variables, using a CSS Preprocessor or elm-css, it's done by following the [create-elm-app docs][create elm app docs].
 
-## Cleaning the Repo
+### Service Workers
+
+### Cleaning the Repo
 
 *TODO*
 Ok, so I've made a big deal about there being no extra clutter, but you may have noticed that there are actually some files you might not need, depending on what development tools you're using! This section will list everything you can remove without breaking the project.
@@ -111,6 +123,7 @@ This project is licensed under the MIT License, see [LICENSE](./LICENSE) for det
 
 [elm install]: https://guide.elm-lang.org/install.html
 [elm guide]: https://guide.elm-lang.org/
+[elm ports]: https://guide.elm-lang.org/interop/ports.html
 [elm live]: https://github.com/wking-io/elm-live
 [elm package site]: https://github.com/elm/package.elm-lang.org
 [rtfeldman spa]: https://github.com/rtfeldman/elm-spa-example

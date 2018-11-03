@@ -48,13 +48,14 @@ update msg model =
 -- VIEW
 
 
-view : Model -> Viewer.Details msg
+view : Model -> Viewer.Details Msg
 view model =
     { title = toTitle model
     , body =
         [ h1 [] [ text "Page With Subpage - this is a page that can handle subpaths in its routing!" ]
-        , div [] [ text "The subpath could be anything, or something specific, like a string or integer. You could also have many subpaths if you wanted!" ]
+        , div [] [ text "The subpath could be anything, or a specific type, like a string or integer. You can have many levels of subpaths if you wanted! This demo shows a single level that accepts any string." ]
         , div [] [ text <| "The current subpath is : " ++ model.subpage ]
+        , div [] [a [href "/pagewithsubpage/awonderfulsubpath"] [text "click here to go to another subpath"] ]
         ]
     }
 

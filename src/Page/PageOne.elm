@@ -44,12 +44,12 @@ update msg model =
 -- VIEW
 
 
-view : Model -> Viewer.Details msg
+view : Model -> Viewer.Details Msg
 view model =
     { title = toTitle
     , body =
-        [ h1 [] [ text "Page One - This is a page in your appplication." ]
-        , div [] [ text "This page should be filled with content..." ]
+        [ h1 [] [ text "Page One - A wonderful page in your appplication." ]
+        , div [] [ text "A beautiful, completely empty page." ]
         ]
     }
 

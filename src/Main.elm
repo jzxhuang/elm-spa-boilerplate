@@ -77,8 +77,7 @@ init flags url key =
     --  On loading the application, we read form local storage. If the object is incorrectly formatted, clear localStorage
     case localStorage of
         Ok success ->
-            -- ( model, cmds )
-            ( model, Cmd.batch [ cmds, Ports.toLocalStorage { token = "sometoken" } ] )
+            ( model, cmds )
 
         Err _ ->
             -- If localstorage decoder failed, clear localstorage
