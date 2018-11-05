@@ -57,10 +57,10 @@ app.ports.clearLocalStorage.subscribe(() => {
   However, this may actually be useful! How?
   
   By doing this, we can synchronize state across multiple tabs!  For example, assuming that some sort of user credentials are stored in localStorage...
-  if a user signs out on one tab, our app will receive the update in all other tabs and respond appropriately!
+  if a user signs out on one tab, and we clear the localStorage through Elm in that tab, our app will receive the update in all other tabs and respond appropriately if we send this 'redundant' message!
   
-  However, one must be very careful in how you are handling changes in localStorage in each page. 
-  There can be glitches caused by loops or a 'change' being received twice! 
+  However, one must be very careful in how you handle changes in localStorage in each page. 
+  You might end up creating an infinite loop of messages being passed, or responding to a change in localStorage twice
   or that reason, I've left this 'redundancy' commented out. It shouldn't be needed for most simple applications
 
 */

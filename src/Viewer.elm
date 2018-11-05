@@ -65,7 +65,7 @@ viewHeader =
 viewFooter : Html msg
 viewFooter =
     div [ class "footer", class "container" ]
-        [ text "A simple, no-frills boilerplate for creating robust Single Page Applications (SPAs) in Elm."
+        [ text "A simple, no-frills boilerplate for creating delightful Single Page Applications (SPAs) in Elm."
         , a [ href "https://github.com/jzxhuang/elm-spa-boilerplate" ] [ text "Check it out on Github!" ]
         , text "© 2018 - present Jeffrey Huang."
         ]

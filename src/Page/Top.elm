@@ -90,38 +90,39 @@ view model =
     { title = toTitle
     , body =
         [ h1 [] [ text "elm-spa-boilerplate" ]
+        , div [ class "content" ]
+            [ -- Intro and features
+              div [] [ text "A simple, no-frills boilerplate for creating delightful Single Page Applications (SPAs) in Elm. Everything you need to get started with no extra clutter. Just clone, compile, and get right to coding!" ]
+            , div [] [ text "Some highlights of this boilerplate:" ]
+            , highlights
 
-        -- Intro and features
-        , div [] [ text "A simple, no-frills boilerplate for creating robust Single Page Applications (SPAs) in Elm. The dirty work is done for you, with no extra clutter. Just clone, compile, and get right to coding!" ]
-        , div [] [ text "Some highlights of this boilerplate:" ]
-        , highlights
+            -- Valid links
+            , div [] [ text "Here's some links to try out the client-side routing. Be sure to try using your browser's Back and Forward buttons, and refresh the page anytime!" ]
+            , ul [] [ viewLink "/pageone", viewLink "/pagewithsubpage/subpage-name", viewLink "/pagewithsubpage/adpoifjawef" ]
 
-        -- Valid links
-        , div [] [ text "Here's some links to try out the client-side routing. Be sure to try using your browser's Back and Forward buttons, and refresh the page anytime!" ]
-        , ul [] [ viewLink "/pageone", viewLink "/pagewithsubpage/subpage-name", viewLink "/pagewithsubpage/adpoifjawef" ]
+            -- Invalid links demonstrating 404 redirecting (assuming the server is set up to redirect 404 to index.html)
+            , div [] [ text "You can handle 404 errors however you'd like - for example, rendering a static page, or routing to the home page. I chose to show a static 404 page - Here's a bunch of links that route there:" ]
+            , ul [] [ viewLink "/doesnotexist", viewLink "/invalidpage", viewLink "/pageone/kaldjf", viewLink "/pagewithsubpage/" ]
 
-        -- Invalid links demonstrating 404 redirecting (assuming the server is set up to redirect 404 to index.html)
-        , div [] [ text "You can handle 404 errors however you'd like - for example, rendering a static page, or routing to the home page. I chose to show a static 404 page - Here's a bunch of links that route there:" ]
-        , ul [] [ viewLink "/doesnotexist", viewLink "/invalidpage", viewLink "/pageone/kaldjf", viewLink "/pagewithsubpage/" ]
+            -- Demo of localStorage (set, clear, current value)
+            , div [] [ text "The required ports, decoder and JS handlers for using localStorage is initalized for you. Check it out:" ]
+            , div []
+                [ input [ class "input", placeholder "Set the value in localStorage...", Html.Events.onInput LocalStorageInputFieldChange, onEnter SetLocalStorage, value model.localStorageInputField ] [] ]
+            , div []
+                [ button [ Html.Events.onClick SetLocalStorage ] [ text "Set localStorage" ]
+                , button [ Html.Events.onClick ClearLocalStorage ] [ text "Clear localStorage" ]
+                ]
+            , div []
+                [ text <|
+                    "Current value in localStorage is: "
+                        ++ (case model.session.localStorage of
+                                Just item ->
+                                    "{\"token\": " ++ item.token ++ "}"
 
-        -- Demo of localStorage (set, clear, current value)
-        , div [] [text "The required ports, decoder and JS handlers for using localStorage is initalized for you. Check it out:"]
-        , div []
-            [ input [ class "input", placeholder "Set the value in localStorage...", Html.Events.onInput LocalStorageInputFieldChange, onEnter SetLocalStorage, value model.localStorageInputField ] [] ]
-        , div []
-            [ button [ Html.Events.onClick SetLocalStorage ] [ text "Set localStorage" ]
-            , button [ Html.Events.onClick ClearLocalStorage ] [ text "Clear localStorage" ]
-            ]
-        , div []
-            [ text <|
-                "Current value in localStorage is: "
-                    ++ (case model.session.localStorage of
-                            Just item ->
-                                "{\"token\": " ++ item.token ++ "}"
-
-                            Nothing ->
-                                "Nothing"
-                       )
+                                Nothing ->
+                                    "Nothing"
+                           )
+                ]
             ]
         ]
     }

@@ -52,10 +52,18 @@ view : Model -> Viewer.Details Msg
 view model =
     { title = toTitle model
     , body =
-        [ h1 [] [ text "Page With Subpage - this is a page that can handle subpaths in its routing!" ]
-        , div [] [ text "The subpath could be anything, or a specific type, like a string or integer. You can have many levels of subpaths if you wanted! This demo shows a single level that accepts any string." ]
-        , div [] [ text <| "The current subpath is : " ++ model.subpage ]
-        , div [] [a [href "/pagewithsubpage/awonderfulsubpath"] [text "click here to go to another subpath"] ]
+        [ h1 [] [ text "elm-spa-boilerplate - Page With Subpage" ]
+        , div [ class "content" ]
+            [ h3 [] [ text "This is a page that can handle subpaths in its routing." ]
+            , h3 [] [ text <| "The current subpath is : /" ++ model.subpage ]
+            , div [] [ text "The subpath could be anything, or a specific type, like a string or integer. You can have many levels of subpaths if you wanted!" ]
+            , div []
+                [ text " This demo accepts a single level subpath that can be any string. For example, "
+                , a [ href "/pagewithsubpage/xyz" ] [ text "/pagewithsubpage/xyz" ]
+                ]
+            , div [] [ a [ href "/pagewithsubpage/a-wonderful-subpath" ] [ text "click here to go to a subpath" ] ]
+            , div [] [ a [ href "/pagewithsubpage/i-love-elm" ] [ text "click here to go to another subpath" ] ]
+            ]
         ]
     }
 

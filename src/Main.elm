@@ -4,7 +4,7 @@ module Main exposing (Model, Msg(..), init, main, subscriptions, update, view)
 
 import Browser
 import Browser.Events
-import Browser.Navigation as Nav
+import Browser.Navigation
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Json.Decode
@@ -23,6 +23,8 @@ import Viewer
 
 
 -- TYPES
+-- Page: each time you need to add/remove a page, this needs to be updated appropriately
+-- Each page holds the respective pages model, with the exception of the 404 NotFound page type
 
 
 type Page
@@ -34,38 +36,22 @@ type Page
 
 
 
-{-
-   ███╗   ███╗ ██████╗ ██████╗ ███████╗██╗
-   ████╗ ████║██╔═══██╗██╔══██╗██╔════╝██║
-   ██╔████╔██║██║   ██║██║  ██║█████╗  ██║
-   ██║╚██╔╝██║██║   ██║██║  ██║██╔══╝  ██║
-   ██║ ╚═╝ ██║╚██████╔╝██████╔╝███████╗███████╗
-   ╚═╝     ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝╚══════╝
-
--}
 -- MODEL
 
 
 type alias Model =
-    { key : Nav.Key
+    { key : Browser.Navigation.Key -- Required in a Browser.application
     , page : Page
     }
 
 
 
-{-
-   ██╗███╗   ██╗██╗████████╗
-   ██║████╗  ██║██║╚══██╔══╝
-   ██║██╔██╗ ██║██║   ██║
-   ██║██║╚██╗██║██║   ██║
-   ██║██║ ╚████║██║   ██║
-   ╚═╝╚═╝  ╚═══╝╚═╝   ╚═╝
-
--}
 -- INIT
+-- To initialize the app, we route the URL to determine what page should be rendered.
+-- We also get some information from the flags that will be stored in the Session
 
 
-init : Type.Flags.Flags -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
+init : Type.Flags.Flags -> Url.Url -> Browser.Navigation.Key -> ( Model, Cmd Msg )
 init flags url key =
     let
         localStorage =
@@ -85,15 +71,6 @@ init flags url key =
 
 
 
-{-
-   ██╗   ██╗██████╗ ██████╗  █████╗ ████████╗███████╗
-   ██║   ██║██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝██╔════╝
-   ██║   ██║██████╔╝██║  ██║███████║   ██║   █████╗
-   ██║   ██║██╔═══╝ ██║  ██║██╔══██║   ██║   ██╔══╝
-   ╚██████╔╝██║     ██████╔╝██║  ██║   ██║   ███████╗
-    ╚═════╝ ╚═╝     ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝
-
--}
 -- UPDATE
 
 
@@ -111,18 +88,34 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
+        -- When a link is clicked anywhere on our page. There are two types of links, external and internal
         LinkClicked urlRequest ->
             case urlRequest of
                 Browser.Internal url ->
-                    ( model, Nav.pushUrl model.key (Url.toString url) )
+                    -- If you'd like to use hash-based routing:
+                    -- ( model, Nav.pushUrl model.key (Url.toString (toHashUrl url)) )
+                    ( model, Browser.Navigation.pushUrl model.key (Url.toString url) )
 
                 Browser.External href ->
-                    ( model, Nav.load href )
+                    ( model, Browser.Navigation.load href )
 
+        -- When the URL changes. This could from something like clicking a link or the browser back/forward buttons
         UrlChanged url ->
             routeUrl url model
 
-        -- Handle a change in localStorage! For example, update the session and send a message to the current page indicating the change
+        -- Handle this however you'd like for responsive web design! The view in Main.elm and each respective page can change depending on the window size
+        OnWindowResize width height ->
+            let
+                session =
+                    extractSession model
+
+                windowSize =
+                    { width = width, height = height }
+            in
+            updateSession model { session | windowSize = windowSize }
+
+        -- Handle a change in localStorage. Can be modified to your needs
+        -- In the boilerplate, I update the session and send a message to the active page with tne new session
         OnLocalStorageChange msg ->
             let
                 localStorage =
@@ -141,29 +134,11 @@ update message model =
             in
             updateSession model newSession
 
-        -- Handle this however you'd like for responsive web design! The view in Main.elm and each respective page can change depending on the window size
-        OnWindowResize width height ->
-            let
-                session =
-                    extractSession model
-
-                windowSize =
-                    { width = width, height = height }
-            in
-            updateSession model { session | windowSize = windowSize }
-
+        -- The messages below will send a message received in Main.elm to the respective page.
         TopMsg msg ->
             case model.page of
                 Top m ->
                     mapTopMsg model (Top.update msg m)
-
-                _ ->
-                    ( model, Cmd.none )
-
-        PageOneMsg msg ->
-            case model.page of
-                PageOne m ->
-                    mapPageOneMsg model (PageOne.update msg m)
 
                 _ ->
                     ( model, Cmd.none )
@@ -174,6 +149,14 @@ update message model =
         --                mapNewPageMsg model (NewPage.update msg m)
         --            _ ->
         --                ( model, Cmd.none )
+        PageOneMsg msg ->
+            case model.page of
+                PageOne m ->
+                    mapPageOneMsg model (PageOne.update msg m)
+
+                _ ->
+                    ( model, Cmd.none )
+
         PageWithSubpageMsg msg ->
             case model.page of
                 PageWithSubpage m ->
@@ -184,16 +167,8 @@ update message model =
 
 
 
-{-
-   ██╗   ██╗██╗███████╗██╗    ██╗
-   ██║   ██║██║██╔════╝██║    ██║
-   ██║   ██║██║█████╗  ██║ █╗ ██║
-   ╚██╗ ██╔╝██║██╔══╝  ██║███╗██║
-    ╚████╔╝ ██║███████╗╚███╔███╔╝
-     ╚═══╝  ╚═╝╚══════╝ ╚══╝╚══╝
-
--}
 -- VIEW
+-- Our view function renders the page depending on which page is active.
 
 
 view : Model -> Browser.Document Msg
@@ -209,25 +184,16 @@ view model =
         Top m ->
             Viewer.view session TopMsg (Top.view m)
 
+        -- NewPage _ ->
+        -- Viewer.view session             NewPageMsg (NewPage.view m) model.route
         PageOne m ->
             Viewer.view session PageOneMsg (PageOne.view m)
 
-        -- NewPage _ ->
-        -- Viewer.view session             NewPageMsg (NewPage.view m) model.route
         PageWithSubpage m ->
             Viewer.view session PageWithSubpageMsg (PageWithSubpage.view m)
 
 
 
-{-
-   ███████╗██╗   ██╗██████╗ ███████╗ ██████╗██████╗ ██╗██████╗ ████████╗██╗ ██████╗ ███╗   ██╗███████╗
-   ██╔════╝██║   ██║██╔══██╗██╔════╝██╔════╝██╔══██╗██║██╔══██╗╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝
-   ███████╗██║   ██║██████╔╝███████╗██║     ██████╔╝██║██████╔╝   ██║   ██║██║   ██║██╔██╗ ██║███████╗
-   ╚════██║██║   ██║██╔══██╗╚════██║██║     ██╔══██╗██║██╔═══╝    ██║   ██║██║   ██║██║╚██╗██║╚════██║
-   ███████║╚██████╔╝██████╔╝███████║╚██████╗██║  ██║██║██║        ██║   ██║╚██████╔╝██║ ╚████║███████║
-   ╚══════╝ ╚═════╝ ╚═════╝ ╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝╚═╝        ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
-
--}
 -- SUBSCRIPTIONS
 
 
@@ -240,15 +206,6 @@ subscriptions model =
 
 
 
-{-
-   ███╗   ███╗ █████╗ ██╗███╗   ██╗
-   ████╗ ████║██╔══██╗██║████╗  ██║
-   ██╔████╔██║███████║██║██╔██╗ ██║
-   ██║╚██╔╝██║██╔══██║██║██║╚██╗██║
-   ██║ ╚═╝ ██║██║  ██║██║██║ ╚████║
-   ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝
-
--}
 -- MAIN
 
 
@@ -265,15 +222,7 @@ main =
 
 
 
-{-
-   ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗
-   ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝
-   █████╗  ██║   ██║██╔██╗ ██║██║        ██║   ██║██║   ██║██╔██╗ ██║███████╗
-   ██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ██║██║   ██║██║╚██╗██║╚════██║
-   ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║███████║
-   ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
-
--}
+-- FUNCTIONS
 -- Helper functions to send a command from Main to a page
 
 
@@ -345,15 +294,7 @@ updateSession model session =
 
 
 -- ROUTING
-{-
-   ██████╗  ██████╗ ██╗   ██╗████████╗██╗███╗   ██╗ ██████╗
-   ██╔══██╗██╔═══██╗██║   ██║╚══██╔══╝██║████╗  ██║██╔════╝
-   ██████╔╝██║   ██║██║   ██║   ██║   ██║██╔██╗ ██║██║  ███╗
-   ██╔══██╗██║   ██║██║   ██║   ██║   ██║██║╚██╗██║██║   ██║
-   ██║  ██║╚██████╔╝╚██████╔╝   ██║   ██║██║ ╚████║╚██████╔╝
-   ╚═╝  ╚═╝ ╚═════╝  ╚═════╝    ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝
-
--}
+-- The following functions create the client-side router. Update "parser" and "paths" for each page you add/remove
 
 
 routeUrl : Url.Url -> Model -> ( Model, Cmd Msg )
@@ -361,7 +302,13 @@ routeUrl url model =
     let
         session =
             extractSession model
+
+        -- If you'd like to use hash-based routing:
+        -- hashUrl =
+        --     { url | path = Maybe.withDefault "" url.fragment, fragment = Nothing }
     in
+    -- If you'd like to use hash-based routing:
+    -- case Parser.parse (parser model session) hashUrl of
     case Parser.parse (parser model session) url of
         Just success ->
             success
@@ -373,6 +320,10 @@ routeUrl url model =
 route : Parser.Parser a b -> a -> Parser.Parser (b -> c) c
 route parser_ handler =
     Parser.map handler parser_
+
+
+
+-- URL Parser tha maps a URL to a Page, and initializes that page.
 
 
 parser : Model -> Session.Session -> Parser.Parser (( Model, Cmd Msg ) -> a) a
@@ -389,6 +340,10 @@ parser model session =
         ]
 
 
+
+--  This holds the paths for each page. Update as needed for each page you add/remove
+
+
 paths =
     { top = ""
     , pageOne = "pageone"
@@ -396,3 +351,10 @@ paths =
 
     --, newPage = "newpage"
     }
+
+
+
+-- Uncomment  this helper function if you need to use hash-based routing.
+-- toHashUrl : Url.Url -> Url.Url
+-- toHashUrl url =
+--     { url | fragment = Just url.path, path = "" }

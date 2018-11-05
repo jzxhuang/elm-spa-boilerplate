@@ -23,8 +23,9 @@ div.logo {
 
 /* Header links */
 div.header div.nav-links {
-  position: absolute;
-  right: 0px;
+  margin-left: auto;
+  /* position: absolute;
+  right: 0px; */
   padding-right: 15px;
 }
 
@@ -42,7 +43,12 @@ div.nav-links a:hover {
 /* Main view */
 div.main {
   flex-direction: column;
-  padding: 0 20px;
+  padding: 0 75px;
+}
+
+/* Main content wrapper */
+.content div {
+  margin: 10px 0;
 }
 
 /* Footer */

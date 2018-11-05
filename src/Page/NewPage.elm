@@ -1,4 +1,4 @@
-module Page.PageOne exposing (Model, Msg(..), init, update, view)
+module Page.NewPage exposing (Model, Msg(..), init, update, view)
 
 import Browser
 import Html exposing (..)
@@ -48,8 +48,8 @@ view : Model -> Viewer.Details Msg
 view model =
     { title = toTitle
     , body =
-        [ h1 [] [ text "elm-spa-boilerplate - Page One" ]
-        , div [] [ text "A beautiful, completely empty page in your application." ]
+        [ h1 [] [ text "elm-spa-boilerplate - New Page" ]
+        , div [] [ text "A new page." ]
         ]
     }
 
@@ -59,4 +59,4 @@ view model =
 
 
 toTitle =
-    "Page One"
+    "New Page"
