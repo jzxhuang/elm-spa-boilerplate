@@ -41,7 +41,7 @@ view session msg details =
 
 -- HEADER
 -- This header is statically generated. You'd likely want this to be dynamic in some way based on the active page & session
--- You could create an addtional field in Viewer.Details for a header, and create this header in Main.elm or in each individual page's view
+-- You could create an additional field in Viewer.Details for a header, and create this header in Main.elm or in each individual page's view
 
 
 viewHeader : Html msg

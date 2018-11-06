@@ -107,7 +107,7 @@ view model =
             -- Demo of localStorage (set, clear, current value)
             , div [] [ text "The required ports, decoder and JS handlers for using localStorage is initalized for you. Check it out:" ]
             , div []
-                [ input [ class "input", placeholder "Set the value in localStorage...", Html.Events.onInput LocalStorageInputFieldChange, onEnter SetLocalStorage, value model.localStorageInputField ] [] ]
+                [ input [ class "input", style "width" "250px", placeholder "Set the value in localStorage...", Html.Events.onInput LocalStorageInputFieldChange, onEnter SetLocalStorage, value model.localStorageInputField ] [] ]
             , div []
                 [ button [ Html.Events.onClick SetLocalStorage ] [ text "Set localStorage" ]
                 , button [ Html.Events.onClick ClearLocalStorage ] [ text "Clear localStorage" ]
