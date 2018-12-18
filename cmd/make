@@ -1,0 +1,10 @@
+#!/bin/bash
+# Compiles Elm code and transpiles JS to ES5
+
+printf "\n\e[0;32m🍣   Compiling...\e[0m\n\n"
+# elm make --optimize --output=dist/elm.js src/Main.elm 
+elm make --output=dist/elm.js src/Main.elm 
+
+
+printf "\n\e[0;32m🍣   Transpiling...\e[0m\n\n"
+./node_modules/.bin/babel dist/static/js/index.js -o dist/static/js/index.js 

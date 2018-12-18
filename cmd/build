@@ -1,0 +1,17 @@
+#!/bin/bash
+printf "\n\e[0;32m🍣   Generating production ready files...\e[0m\n\n"
+rm -rf dist
+mkdir dist
+mkdir dist/static
+cp index.html dist
+cp static/robots.txt  dist/static
+cp static/favicon.ico dist/static
+cp static/manifest.json dist/static
+cp -r static/images dist/static
+cp -r static/css dist/static
+cp -r static/js dist/static
+
+cmd/make
+cmd/uglify
+
+# TODO : minify html, css
