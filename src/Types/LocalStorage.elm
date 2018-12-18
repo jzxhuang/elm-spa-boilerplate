@@ -1,4 +1,4 @@
-module Type.LocalStorage exposing (LocalStorage, decode, encode)
+module Types.LocalStorage exposing (LocalStorage, decode, encode)
 
 import Json.Decode
 import Json.Decode.Pipeline

@@ -1,9 +1,9 @@
-module Session exposing (Session, init)
+module Types.Session exposing (Session, init)
 
 import Json.Decode
 import Time
-import Type.Flags
-import Type.LocalStorage
+import Types.Flags
+import Types.LocalStorage
 
 
 
@@ -17,7 +17,7 @@ import Type.LocalStorage
 type alias Session =
     { timeAppStarted : Time.Posix
     , windowSize : { width : Int, height : Int }
-    , localStorage : Maybe Type.LocalStorage.LocalStorage
+    , localStorage : Maybe Types.LocalStorage.LocalStorage
     }
 
 
@@ -25,11 +25,11 @@ type alias Session =
 -- Initializes a session given some flags
 
 
-init : Type.Flags.Flags -> Session
+init : Types.Flags.Flags -> Session
 init flags =
     let
         localStorage =
-            Json.Decode.decodeValue Type.LocalStorage.decode flags.localStorage
+            Json.Decode.decodeValue Types.LocalStorage.decode flags.localStorage
 
         posixTime =
             Time.millisToPosix flags.timeAppStarted

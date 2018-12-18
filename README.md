@@ -102,7 +102,7 @@ The necessary initialization for using localStorage is implemented.  There are t
 
 The corresponding handlers for these ports can be found in [index.js](src/index.js). You can also change the key you'd like to use by changing `storageName` in [index.js](src/index.js).
 
-The structure of the localStorage object is found in [Type.LocalStorage.elm](src/Type/LocalStorage.elm) - change this code as needed to match the structure of the data you'd like. On initialization, the data in localStorage will be sent to Elm through a flag, and stored in the `Session` if it is of a valid structure.
+The structure of the localStorage object is found in [Types.LocalStorage.elm](src/Types/LocalStorage.elm) - change this code as needed to match the structure of the data you'd like. On initialization, the data in localStorage will be sent to Elm through a flag, and stored in the `Session` if it is of a valid structure.
 
 A demonstration of how to interact with localStorage on the [Home page](src/Top.elm) - reading through this code should make it pretty clear how to use localStorage!
 

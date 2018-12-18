@@ -1,7 +1,7 @@
 port module Ports exposing (clearLocalStorage, onLocalStorageChange, toLocalStorage)
 
 import Json.Encode
-import Type.LocalStorage
+import Types.LocalStorage
 
 
 
@@ -19,7 +19,7 @@ port onLocalStorageChange : (Json.Encode.Value -> msg) -> Sub msg
 -- Set localStorage
 
 
-port toLocalStorage : Type.LocalStorage.LocalStorage -> Cmd msg
+port toLocalStorage : Types.LocalStorage.LocalStorage -> Cmd msg
 
 
 

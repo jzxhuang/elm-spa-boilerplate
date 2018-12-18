@@ -1,7 +1,7 @@
-module Type.Flags exposing (Flags)
+module Types.Flags exposing (Flags)
 
 import Json.Encode
-import Type.LocalStorage
+import Types.LocalStorage
 
 
 

@@ -1,4 +1,4 @@
-module Utils exposing (genericTitle, logo, viewLink)
+module Helpers.Misc exposing (genericTitle, logo, shape, viewLink)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)

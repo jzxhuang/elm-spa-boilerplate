@@ -1,11 +1,11 @@
 module Viewer exposing (Details, notFound, view)
 
 import Browser
+import Helpers.Misc as Misc
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Session
+import Types.Session as Session
 import Url.Builder
-import Utils
 
 
 
@@ -27,11 +27,11 @@ type alias Details msg =
 
 view : Session.Session -> (a -> msg) -> Details a -> Browser.Document msg
 view session msg details =
-    { title = details.title ++ Utils.genericTitle
+    { title = details.title ++ Misc.genericTitle
     , body =
         [ viewHeader
 
-        -- , Utils.logo 256
+        -- , Misc.logo 256
         , Html.map msg <| div [ class "container", class "main", style "height" (String.fromInt (session.windowSize.height - headerHeight - footerHeight) ++ "px") ] details.body
         , viewFooter
         ]
@@ -98,7 +98,7 @@ notFound =
 
 viewLogo : Html msg
 viewLogo =
-    a [ href "/", style "text-decoration" "none" ] [ Utils.logo 32 ]
+    a [ href "/", style "text-decoration" "none" ] [ Misc.logo 32 ]
 
 
 

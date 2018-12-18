@@ -1,14 +1,14 @@
-module Page.Top exposing (Model, Msg(..), init, update, view)
+module Pages.Top exposing (Model, Msg(..), init, update, view)
 
 import Browser
 import Browser.Events
+import Helpers.Misc as Misc exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events
 import Json.Decode
 import Ports
-import Session
-import Utils exposing (..)
+import Types.Session as Session
 import Viewer
 
 

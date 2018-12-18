@@ -1,9 +1,9 @@
-module Page.PageWithSubpage exposing (Model, Msg(..), init, update, view)
+module Pages.PageWithSubpage exposing (Model, Msg(..), init, update, view)
 
 import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Session
+import Types.Session as Session
 import Viewer
 
 
